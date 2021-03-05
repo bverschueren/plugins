@@ -115,7 +115,9 @@ func ConfigureIface(ifName string, res *current.Result) error {
 		}
 		if err = ip.AddRoute(&r.Dst, gw, link); err != nil {
 			// we skip over duplicate routes as we assume the first one wins
-			if !os.IsExist(err) {
+			if os.IsExist(err) {
+				return fmt.Debugf("skipping duplicate route '%v via %v dev %v': %v", r.Dst, gw, ifName, err)
+			} else {
 				return fmt.Errorf("failed to add route '%v via %v dev %v': %v", r.Dst, gw, ifName, err)
 			}
 		}
